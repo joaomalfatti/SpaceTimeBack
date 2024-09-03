@@ -1,6 +1,10 @@
 import fastify from "fastify";
+import {memoriesRoutes} from './routes/memories'
 
 const app = fastify()
+
+//Registrar um arquivo de rota separados.
+app.register(memoriesRoutes)
 
 app.listen({
   port:3333
