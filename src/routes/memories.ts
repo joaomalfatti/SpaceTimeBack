@@ -74,7 +74,23 @@ export async function memoriesRoutes(app: FastifyInstance) {
     
   })
   //Deletar uma memória existente.
-  app.delete('/memories/:id', async() => {
-    
+  app.delete('/memories/:id', async(request) => {
+    //Ele é igual get:id, porém, método delete.
+     //meu params ele é um objeto, quero que ele traz para mim uma string, utlizando uuid como paramêtro, sabendo que ele é um tipo uuid.
+     const paramsSchema = z.object({
+      id: z.string().uuid(),
+    })
+
+    //objeto request.params segue a mesma lógica do z.object.
+    // se for ele vai trazer ID se não, código para.
+    const {id} = paramsSchema.parse(request.params)
+
+    // quero obter a memory do bd e encontrar uma única memória e utilizar um método auxiliar do prisma.
+    await prisma.memory.delete({
+      where: {
+        id,
+      }
+    })
+
   })
 };
