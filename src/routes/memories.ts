@@ -42,8 +42,31 @@ export async function memoriesRoutes(app: FastifyInstance) {
 
     return memory
   })
+
   //Criar uma nova memória.
-  app.post('/memories', async() => {
+  app.post('/memories', async(request) => {
+    //Aqui nada mais é que quando for enviar uma memória, ela tem que retornar verdadeiro ou falso.
+    const bodySchema = z.object({
+      contet: z.string(),
+      coverUrl: z.string(),
+      isPublic: z.coerce.boolean().default(false)
+    })
+
+    //objeto request.params segue a mesma lógica do z.object.
+    // se for ele vai as informações bodySchema
+    const {contet, coverUrl, isPublic} = bodySchema.parse(request.body)
+
+    //Aqui vai adicionar ao banco de dados
+    const memory = await prisma.memory.create({
+      data: {
+        contet,
+        coverUrl,
+        isPublic,
+        userId: 'f37d5dca-dd19-4887-b526-75279293e646',
+      }
+    })
+
+    return memory
 
   })
   //Atualizar uma memória existente.
