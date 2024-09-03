@@ -23,8 +23,24 @@ export async function memoriesRoutes(app: FastifyInstance) {
   })
 
   //Detalhes de uma memória em específica.
-  app.get('/memories/:id', async() => {
-    
+  app.get('/memories/:id', async(request) => {
+    //meu params ele é um objeto, quero que ele traz para mim uma string, utlizando uuid como paramêtro, sabendo que ele é um tipo uuid.
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    })
+
+    //objeto request.params segue a mesma lógica do z.object.
+    // se for ele vai trazer ID se não, código para.
+    const {id} = paramsSchema.parse(request.params)
+
+    // quero obter a memory do bd e encontrar uma única memória e utilizar um método auxiliar do prisma.
+    const memory = await prisma.memory.findUniqueOrThrow({
+      where: {
+        id,
+      }
+    })
+
+    return memory
   })
   //Criar uma nova memória.
   app.post('/memories', async() => {
