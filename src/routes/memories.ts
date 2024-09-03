@@ -70,9 +70,36 @@ export async function memoriesRoutes(app: FastifyInstance) {
 
   })
   //Atualizar uma memória existente.
-  app.put('/memories/:id', async() => {
-    
+  app.put('/memories/:id', async(request) => {
+    //Aqui será validação do cabeça
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    });
+    const {id} = paramsSchema.parse(request.params);
+
+    //Aqui será validação do corpo
+    const bodySchema = z.object({
+      contet: z.string(),
+      coverUrl: z.string(),
+      isPublic: z.coerce.boolean().default(false)
+    });
+    const {contet, coverUrl, isPublic} = bodySchema.parse(request.body);
+
+    //Depois dessas validações, agora será parte de atualização, onde é:
+    const memory = await prisma.memory.update({
+      where: {
+        id,
+      },
+      data: {
+        contet,
+        coverUrl,
+        isPublic,
+      },
+    });
+
+    return memory;
   })
+  
   //Deletar uma memória existente.
   app.delete('/memories/:id', async(request) => {
     //Ele é igual get:id, porém, método delete.
