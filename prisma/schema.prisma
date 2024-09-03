@@ -8,6 +8,23 @@ datasource db {
 }
 
 model User {
-  id   String @id @default(uuid())
-  name String
+  id        String @id @default(uuid())
+  githubId  Int    @unique // Aqui vai ter as informações do github
+  name      String // nome do usuário
+  login     String // login do github
+  avatarUrl String // avatar do usuário
+
+  memories Memory[]
+}
+
+model Memory {
+  id        String   @id @default(uuid())
+  coverUrl  String //Endereço da imagem ou vídeo do fundo da publicação.
+  contet    String // conteúdo da memória da publicação
+  isPublic  Boolean  @default(false) // publicação em si.
+  createdAt DateTime @default(now()) // data da criação da memória
+
+  //Toda memoria precisa de um usuário.
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
